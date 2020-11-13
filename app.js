@@ -41,7 +41,8 @@ function writeSearch(req, res){
     res.writeHead(200, { "Content-Type": "text/html"})
     let query = url.parse(req.url, true).query//to implement
 
-    let search = query.search // to implement ternary operator
+    let search = query.search 
+    let searchString = String(search).toUpperCase()
     let filter // ti
     
     let html = `
@@ -52,8 +53,8 @@ function writeSearch(req, res){
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
 </head>
-<body>
-    <h1>Stony Brook University</h1>
+<body style="margin: 100px, 100px, 100px, 100px;">
+    <h1 >Stony Brook University</h1>
     <h2>Department of Computer Science</h2>
     <p>Seach for class</p>
     <form action="/" method="GET" class="">
@@ -63,10 +64,49 @@ function writeSearch(req, res){
     </form>
     `
     let found = []
-    for(i = 0; i < courses.length; i++)
-        if(courses[i][1] == search){
+    //course code: e.g. 316
+    for(i = 0; i < courses.length; i++){
+        //e.g. CSE316 or cse 316
+        if(searchString.includes('CSE')){
+            searchString.replace('CSE', '')
+            searchString.replace(' ', '')
+        }
+        //course code
+        if(courses[i][1] == searchString){
             found.push(i)
         }
+        //instructor name e.g. fodor, paul fodor
+        if(String(courses[i][13]).toUpperCase().includes(searchString) && searchString.length > 2){
+            found.push(i)
+        }
+
+        
+
+    }
+    let day
+    //Monday Classes
+    if(searchString.includes('M') || searchString.includes('MON') || searchString.includes('MONDAY')){
+        day = 'M'
+    }
+    if(searchString.includes('TU') || searchString.includes('TUE') || searchString.includes('TUESDAY')){
+        day = 'TU'
+    }
+    if(searchString.includes('W') || searchString.includes('WED') || searchString.includes('WEDNESDAY')){
+        day = 'W'
+    }
+    if(searchString.includes('TH') || searchString.includes('THU') || searchString.includes('THURSDAY')){
+        day = 'TH'
+    }
+    if(searchString.includes('F') || searchString.includes('FRI') || searchString.includes('FRIDAY')){
+        day = 'F'
+    }
+
+    for(i = 0; i < courses.length; i++){
+        if(String(courses[i][4]).toUpperCase().includes(day))
+            found.push(i)
+    }
+    //instructor name:
+
     //adding found courses for display
     for(i = 0; i < found.length; i++){
         current = courses[found[i]]
@@ -118,9 +158,10 @@ function writeSchedule(req, res){
             padding: 15px;
             text-align: left;
         }
+        
     </style>
 </head>
-<body>
+<body style="margin: 20%;">
     <h1>Stony Brook University</h1>
     <h2>Department of Computer Science</h2>
     
